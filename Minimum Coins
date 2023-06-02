@@ -1,0 +1,64 @@
+//memoisation
+
+class Solution {
+private:
+    int solve(int i, int cost, vector<int> coins,vector<vector<int>> &dp){
+        if( i == 0){
+            if(cost%coins[0] == 0)
+            return cost/coins[0];
+        else
+            return 1e9;
+        }
+        if( dp[i][cost] != -1)
+            return  dp[i][cost];
+        int notTake = 0 + solve(i-1,cost,coins,dp);
+        int take = 1e9;
+        if(cost >= coins[i]){
+            take = 1 + solve(i,cost-coins[i],coins,dp);
+        }
+        
+        return dp[i][cost] = min(take, notTake);
+    }
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int n = coins.size();
+        vector<vector<int>> dp(n, vector<int> (amount+1,-1));
+        int ans = solve(n-1,amount,coins,dp);
+        if(ans >= 1e9)
+            return -1;
+        return ans;
+    }
+};
+
+// tabulation
+
+class Solution {
+
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        int n = coins.size();
+        vector<vector<int>> dp(n, vector<int> (amount+1,0));
+        for(int i=0;i<=amount;i++){
+            if(i%coins[0] == 0)
+                dp[0][i] = i/coins[0];
+            else
+                dp[0][i] = 1e9;
+        }
+        
+        for(int i=1;i<n;i++){
+            for(int cost =0;cost<=amount;cost++){
+                int notTake = 0 + dp[i-1][cost];
+                int take = 1e9;
+                if(cost >= coins[i]){
+                    take = 1 + dp[i][cost-coins[i]];
+                }
+
+                dp[i][cost] = min(take, notTake);
+            }
+        }
+        int ans = dp[n-1][amount];
+        if(ans >= 1e9)
+            return -1;
+        return ans;
+    }
+};
