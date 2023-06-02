@@ -1,0 +1,50 @@
+//memoization
+
+#include <bits/stdc++.h> 
+int solve(int i, int w, vector<int> wt, vector<int> val,vector<vector<int>> &dp){
+	if(i == 0){
+		if(wt[0]<=w)
+		return val[0];
+		return 0;
+	}
+	if(dp[i][w] != -1)
+	return dp[i][w];
+	int notTake = 0 + solve(i-1, w, wt, val,dp);
+	int take = INT_MIN;
+	if(wt[i]<=w){
+		take = val[i] + solve(i-1, w-wt[i],wt,val,dp);
+	}
+
+	return dp[i][w] = max(take, notTake);
+}
+int knapsack(vector<int> weight, vector<int> val, int n, int maxwt) 
+{
+	// Write your code here
+	vector<vector<int>> dp(n,vector<int> (maxwt+1,-1));
+	return solve(n-1,maxwt,weight,val,dp);
+}
+
+//tabulation
+
+int knapsack(vector<int> wt, vector<int> val, int n, int maxwt) 
+{
+	// Write your code here
+	vector<vector<int>> dp(n,vector<int> (maxwt+1,0));
+	for(int w=wt[0];w<=maxwt;w++){
+		dp[0][w] = val[0];
+	}
+
+	for(int i = 1;i<n;i++){
+		for(int w = 0;w<=maxwt;w++){
+			int notTake = 0 + dp[i-1][w];
+			int take = INT_MIN;
+			if(wt[i]<=w){
+				take = val[i] + dp[i-1][w-wt[i]];
+			}
+
+			dp[i][w] = max(take, notTake);
+		}
+	}
+	return dp[n-1][maxwt];
+}
+
